@@ -1,8 +1,16 @@
+# a ChatGPT data donation study with Port
+
+This repository contains a port frontend for a data donation study done at ASCoR.
+
+This repository is a copy from [data-donation-task](https://github.com/d3i-infra/data-donation-task) and it contains some extra study specific features.
+Below you can find the readme of the original repository, so the reader can understand what this repository is about.
+
 <p align="center">
   <a href="https://github.com/d3i-infra/feldspar">
     <img width="40%" height="40%" src="./public/port_logo.svg">
   </a>
 </p>
+
 
 # Port: A frontend for data donation studies built for Next
 
