@@ -1,0 +1,34 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      REACT_APP_BUILD: standalone
+      NODE_ENV: development
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm i && pip3 install poetry
+
+      - name: Build release
+        run: npm run release
+
+      - name: Unpack release
+        run: unzip -o release.zip -d build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
