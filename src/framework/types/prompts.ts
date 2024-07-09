@@ -82,7 +82,9 @@ export function isPropsUIPromptConsentFormTable(arg: any): arg is PropsUIPromptC
   __type__: 'PropsUIPromptQuestionnaire'
   questions: PropsUIQuestionMultipleChoice[]
   description: Text
+  questionToChatgpt: string
+  answerFromChatgpt: string
  }
  export function isPropsUIPromptQuestionnaire (arg: any): arg is PropsUIPromptQuestionnaire {
-  return isInstanceOf<PropsUIPromptQuestionnaire>(arg, 'PropsUIPromptQuestionnaire', ['questions', 'description'])
+  return isInstanceOf<PropsUIPromptQuestionnaire>(arg, 'PropsUIPromptQuestionnaire', ['questions', 'description', "questionToChatgpt", "answerFromChatgpt"])
  }

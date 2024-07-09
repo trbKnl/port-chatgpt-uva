@@ -49,11 +49,11 @@ def process(session_id):
 
         file_prompt = generate_file_prompt("application/zip")
         file_result = yield render_page(SUBMIT_FILE_HEADER, file_prompt)
+        question = ""
+        answer = ""
 
         if file_result.__type__ == "PayloadString":
             validation = chatgpt.validate_zip(file_result.value)
-            print("VALIDATION")
-            print(validation)
 
             # Flow logic
             # Happy flow: Valid DDP
@@ -62,6 +62,7 @@ def process(session_id):
                 yield donate_logs(f"{session_id}-tracking")
 
                 extraction_result = extract_chatgpt(file_result.value)
+                question, answer = chatgpt.select_random_qa(file_result.value)
                 table_list = extraction_result
                 break
 
@@ -98,6 +99,15 @@ def process(session_id):
             yield donate(f"{session_id}-{platform_name}", consent_result.value)
             yield donate_logs(f"{session_id}-tracking")
             yield donate_status(f"{session_id}-DONATED", "DONATED")
+
+            # render questionnaire
+            if question != "" and answer != "":
+                render_questionnaire_results = yield render_questionnaire(question, answer)
+                if render_questionnaire_results.__type__ == "PayloadJSON":
+                    yield donate(f"{session_id}-questionnaire-donation", render_questionnaire_results.value)
+                else:
+                    LOGGER.info("Skipped questionnaire: %s", platform_name)
+                    yield donate_logs(f"{session_id}-tracking")
 
 
     yield exit(0, "Success")
@@ -203,3 +213,63 @@ def donate(key, json_string):
 
 def exit(code, info):
     return CommandSystemExit(code, info)
+
+
+
+####################################################################
+
+Q1 = props.Translatable(
+    {
+        "en": "In case you looked at the data presented on this page, did you recognise your Netflix watching patterns?",
+        "nl": "Als u naar uw data gekeken hebt, in hoeverre herkent u uw eigen kijkgedrag?"
+    })
+Q1_CHOICES = [
+    props.Translatable(
+        {
+            "en": "I recognized my Netflix watching patterns", 
+            "nl": "Ik herkende mijn Netflix kijkgedrag"
+        }),
+    props.Translatable(
+        {
+            "en": "I recognized my Netflix watching patterns and patters of those I share my account with", 
+             "nl": "Ik herkende mijn eigen Netflix kijkgedrag en die van anderen met wie ik mijn account deel"
+        }),
+    props.Translatable(
+        {
+            "en": "I recognized mostly the watching patterns of those I share my account with", 
+            "nl": "Ik herkende vooral het kijkgedrag van anderen met wie ik mijn account deel"
+        }),
+    props.Translatable(
+        {
+            "en": "I did not look at my data ",
+             "nl": "Ik heb niet naar mijn gegevens gekeken"
+         }),
+    props.Translatable({
+        "en": "Other", 
+        "nl": "Anders"
+    })
+]
+
+def render_questionnaire(question: str, answer: str):
+    questions = [
+        props.PropsUIQuestionMultipleChoice(question=Q1, id=1, choices=Q1_CHOICES),
+        props.PropsUIQuestionMultipleChoice(question=Q1, id=2, choices=Q1_CHOICES),
+    ]
+
+    description = props.Translatable(
+        {
+            "en": "Below you can find the start of a conversation you had with ChatGPT. We would like to ask you a couple questions about it.",
+            "nl": "Hieronder vind u het begin van een gesprek dat u heeft gehad met ChatGPT. We willen u daar een paar vragen over stellen."
+        })
+    header = props.PropsUIHeader(props.Translatable({"en": "Questionnaire", "nl": "Vragenlijst"}))
+    body = props.PropsUIPromptQuestionnaire(
+        questions=questions, 
+        description=description,
+        questionToChatgpt=question,
+        answerFromChatgpt=answer,
+    )
+    footer = props.PropsUIFooter()
+
+    page = props.PropsUIPageDonation("ASD", header, body, footer)
+    return CommandUIRender(page)
+

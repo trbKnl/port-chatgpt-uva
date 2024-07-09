@@ -267,12 +267,16 @@ class PropsUIPromptQuestionnaire:
     """
     description: Translatable
     questions: list[PropsUIQuestionMultipleChoice | PropsUIQuestionMultipleChoiceCheckbox | PropsUIQuestionOpen]
+    questionToChatgpt: str
+    answerFromChatgpt: str
 
     def toDict(self):
         dict = {}
         dict["__type__"] = "PropsUIPromptQuestionnaire"
         dict["description"] = self.description.toDict()
         dict["questions"] = [q.toDict() for q in self.questions]
+        dict["questionToChatgpt"] = self.questionToChatgpt
+        dict["answerFromChatgpt"] = self.answerFromChatgpt
         return dict
 
 
