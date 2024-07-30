@@ -220,46 +220,47 @@ def exit(code, info):
 
 Q1 = props.Translatable(
     {
-        "en": "In case you looked at the data presented on this page, did you recognise your Netflix watching patterns?",
-        "nl": "Als u naar uw data gekeken hebt, in hoeverre herkent u uw eigen kijkgedrag?"
+        "en": "To what extent do you trust the answer provided by ChatGPT?",
+        "nl": "In hoeverre vertrouwt u het antwoord van ChatGPT?"
     })
 Q1_CHOICES = [
     props.Translatable(
         {
-            "en": "I recognized my Netflix watching patterns", 
-            "nl": "Ik herkende mijn Netflix kijkgedrag"
+            "en": "1. I do not trust it at all", 
+            "nl": "1. Ik vertrouw het helemaal niet"
         }),
     props.Translatable(
         {
-            "en": "I recognized my Netflix watching patterns and patters of those I share my account with", 
-             "nl": "Ik herkende mijn eigen Netflix kijkgedrag en die van anderen met wie ik mijn account deel"
+            "en": "2", 
+             "nl": "2"
         }),
     props.Translatable(
         {
-            "en": "I recognized mostly the watching patterns of those I share my account with", 
-            "nl": "Ik herkende vooral het kijkgedrag van anderen met wie ik mijn account deel"
+            "en": "3", 
+            "nl": "3l"
         }),
     props.Translatable(
         {
-            "en": "I did not look at my data ",
-             "nl": "Ik heb niet naar mijn gegevens gekeken"
+            "en": "4",
+             "nl": "4"
          }),
     props.Translatable({
-        "en": "Other", 
-        "nl": "Anders"
+        "en": "5. I trust it completely", 
+        "nl": "5. Ik vertrouw het volledig"
     })
 ]
+
+
 
 def render_questionnaire(question: str, answer: str):
     questions = [
         props.PropsUIQuestionMultipleChoice(question=Q1, id=1, choices=Q1_CHOICES),
-        props.PropsUIQuestionMultipleChoice(question=Q1, id=2, choices=Q1_CHOICES),
     ]
 
     description = props.Translatable(
         {
-            "en": "Below you can find the start of a conversation you had with ChatGPT. We would like to ask you a couple questions about it.",
-            "nl": "Hieronder vind u het begin van een gesprek dat u heeft gehad met ChatGPT. We willen u daar een paar vragen over stellen."
+            "en": "Below you can find the start of a conversation you had with ChatGPT. We would like to ask you a question about it.",
+            "nl": "Hieronder vind u het begin van een gesprek dat u heeft gehad met ChatGPT. We willen u daar een vraag over stellen."
         })
     header = props.PropsUIHeader(props.Translatable({"en": "Questionnaire", "nl": "Vragenlijst"}))
     body = props.PropsUIPromptQuestionnaire(
