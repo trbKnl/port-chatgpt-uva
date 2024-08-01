@@ -237,7 +237,7 @@ Q1_CHOICES = [
     props.Translatable(
         {
             "en": "3", 
-            "nl": "3l"
+            "nl": "3"
         }),
     props.Translatable(
         {
