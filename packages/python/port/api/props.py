@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, TypedDict, Union
+from typing import Optional, TypedDict, Union, Any
 
 import pandas as pd
 
@@ -314,6 +314,7 @@ class PropsUIPageDataSubmission:
         PropsUIPromptConsentFormTable,
         PropsUIDataSubmissionButtons,
         list,
+        Any,
     ]
 
     def toDict(self):
