@@ -1,12 +1,14 @@
 # Try out Next with Docker
 
-This tutorial outlines how you can run Next in a docker container. 
+This tutorial outlines how you can run Next in a Docker container. 
 
-This is great for trying out the Next platform and will show you the necessary settings so you could use it in production.
+This is great for trying out the Next platform and will show you the necessary settings you need to use in production.
+
+This tutorial is for advanced users.
 
 ## Prerequisites
 
-In order for you to try out Next you need to set up some prerequisites.
+In order for you to try out Next you need to set up prerequisites.
 
 ### Unsplash
 
@@ -30,13 +32,17 @@ We are going to create a folder with the following structure:
 
 ```
 .
-├── docker-compose.yaml
+├── db
+│   ├── ca.crt
+│   ├── server.crt
+│   └── server.key
+├── docker-compose.yml
 └── proxy
-    ├── certs
-    │   ├── nginx-selfsigned.crt
-    │   └── nginx-selfsigned.key
-    └── conf
-        └── nginx.conf
+    ├── certs
+    │   ├── nginx-selfsigned.crt
+    │   └── nginx-selfsigned.key
+    └── conf
+        └── nginx.conf
 ```
 
 In the next step we are going to create the files.
@@ -46,7 +52,7 @@ In the next step we are going to create the files.
 
 Clone or fork [Next](https://github.com/eyra/mono)
 
-`cd` into `/core`
+`cd` into `./mono/core`
 
 and build the image with:
 
@@ -57,6 +63,8 @@ docker build  --build-arg VERSION=1.0.0 --build-arg BUNDLE=self . -t self-d3i:la
 ### Setup certificates for TLS
 
 Create certificates and put them in `proxy/certs`
+
+Use the following command:
 
 ```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt
@@ -112,6 +120,13 @@ http {
 
 This Nginx configuration works with websocket connections which Next (Phoenix web application) uses.
 
+### Setup certificates for Postgres
+
+Next uses TLS to communicate with Posgres. For this you need to setup certificates.
+
+`cd` into `./mono/postgres_ssl` and run `./generate.sh`. Place  `ca.crt`, `server.crt`, and `server.key` in the `db` folder you have just created.
+
+
 
 ### Docker compose yaml
 
@@ -125,6 +140,8 @@ services:
     container_name: self-d3i
     restart: always
     environment:
+      DB_TLS_VERIFY: verify_peer
+      DB_CA_PATH: /ca.crt
       APP_NAME: next
       APP_DOMAIN: localhost
       APP_MAIL_DOMAIN: "@gmail"
@@ -139,22 +156,31 @@ services:
       UNSPLASH_APP_NAME: "<your-unsplash-app-name>"
       GOOGLE_SIGN_IN_CLIENT_ID: "<your-google-oidc-client-id>"
       GOOGLE_SIGN_IN_CLIENT_SECRET: "<your-google-oidc-client-secret>"
-      STORAGE_SERVICES: "builtin, yoda, azure"
+      STORAGE_SERVICES: "builtin"
     volumes:
       - app_data:/tmp
+      - ./db/ca.crt:/ca.crt
     depends_on:
       - db
 
   db:
-    image: postgres:latest
+    image: postgres:15
     container_name: db-next
     restart: always
+    user: root
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: test_database
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db/server.crt:/var/lib/postgresql/ssl/server.crt
+      - ./db/server.key:/var/lib/postgresql/ssl/server.key
+    command: |
+      bash -c "
+        chown postgres:postgres /var/lib/postgresql/ssl/server.key &&
+        exec docker-entrypoint.sh postgres -c ssl=on -c ssl_cert_file=/var/lib/postgresql/ssl/server.crt -c ssl_key_file=/var/lib/postgresql/ssl/server.key
+      "
 
   proxy:
     image: nginx:latest
@@ -183,7 +209,7 @@ GOOGLE_SIGN_IN_CLIENT_SECRET: "<your-google-oidc-client-secret>"
 
 If you want to learn more about the variables you can read the [documentation](https://github.com/eyra/mono/blob/master/SELFHOSTING.md).
 
-Now you are ready to start the containers with:
+Now you are ready to start the containers with the following command:
 
 ```
 docker compose up
@@ -195,4 +221,4 @@ Note: because you self-signed your TLS certificates your browser will complain: 
 
 ## Next steps in Next
 
-Now you can play around in Next. If you want to login as admin go to `/admin/login`.
+Now you can play around in Next: to login as admin go to `/admin/login`.
