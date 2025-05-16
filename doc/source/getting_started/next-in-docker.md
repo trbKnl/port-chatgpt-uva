@@ -22,6 +22,7 @@ Unsplash is used as the source for banner images used to customize studies.
 Configure a google OIDC connect application in the [google cloud console](https://console.cloud.google.com/welcome?project=stalwart-yen-241815). For the details check the [official instructions](https://developers.google.com/identity/openid-connect/openid-connect).
 
 Google OIDC (OpenID Connect) is used to manage user authentication and account sign-ins.
+If you are following this example you should configure `https://localhost:443/google-sign-in/auth` as redirect url
 
 
 ## Run Next in a Docker container
