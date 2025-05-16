@@ -13,6 +13,8 @@ export { Translator } from './framework/translator'
 export { Table } from './framework/types/commands'
 export { 
   Title1, 
+  Title2,
+  Title3,
   Title4, 
   BodyLarge,
   BodySmall,
@@ -21,3 +23,6 @@ export {
   LabelButton,
   PrimaryButton,
 } from './framework/visualization/react/ui/elements/button'
+export { 
+  isInstanceOf,
+} from './framework/helpers'

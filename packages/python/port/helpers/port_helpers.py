@@ -16,6 +16,7 @@ def render_page(
         | d3i_props.PropsUIPromptConsentFormViz
         | props.PropsUIPromptFileInput 
         | d3i_props.PropsUIPromptFileInputMultiple
+        | d3i_props.PropsUIPromptQuestionnaire
         | props.PropsUIPromptConfirm 
     )
 ) -> CommandUIRender:
@@ -190,3 +191,93 @@ def generate_radio_prompt(
     radio_items = [{"id": i, "value": item} for i, item in enumerate(items)]
     return props.PropsUIPromptRadioInput(title, description, radio_items)
 
+
+def generate_questionnaire() -> d3i_props.PropsUIPromptQuestionnaire:
+    """
+    Administer a basic questionnaire in Port.
+
+    This function generates a prompt which can be rendered with render_page().
+    The questionnaire demonstrates all currently implemented question types.
+    In the current implementation, all questions are optional.
+
+    You can build in logic by:
+    - Chaining questionnaires together
+    - Using extracted data in your questionnaires
+
+    Usage:
+        prompt = generate_questionnaire()
+        results = yield render_page(header_text, prompt)
+        
+    The results.value contains a JSON string with question answers that 
+    can then be donated with donate().
+    """
+
+    questionnaire_description = props.Translatable(
+        translations={
+            "en": "Customer Satisfaction Survey for our Online Store",
+            "nl": "Klanttevredenheidsonderzoek voor onze Online Winkel"
+        }
+    )
+
+    open_question = props.Translatable(
+        translations={
+            "en": "How can we improve our services?",
+            "nl": "Hoe kunnen we onze diensten verbeteren?"
+        }
+    )
+
+    mc_question = props.Translatable(
+        translations={
+            "en": "How would you rate your overall experience?",
+            "nl": "Hoe zou u uw algemene ervaring beoordelen?"
+        }
+    )
+
+    mc_choices = [
+        props.Translatable(translations={"en": "Excellent", "nl": "Uitstekend"}),
+        props.Translatable(translations={"en": "Good", "nl": "Goed"}),
+        props.Translatable(translations={"en": "Average", "nl": "Gemiddeld"}),
+        props.Translatable(translations={"en": "Poor", "nl": "Slecht"}),
+        props.Translatable(translations={"en": "Very Poor", "nl": "Zeer slecht"})
+    ]
+
+    checkbox_question = props.Translatable(
+        translations={
+            "en": "Which of our products have you purchased? (Select all that apply)",
+            "nl": "Welke van onze producten heeft u gekocht? (Selecteer alle toepasselijke)"
+        }
+    )
+
+    checkbox_choices = [
+        props.Translatable(translations={"en": "Electronics", "nl": "Elektronica"}),
+        props.Translatable(translations={"en": "Clothing", "nl": "Kleding"}),
+        props.Translatable(translations={"en": "Home Goods", "nl": "Huishoudelijke artikelen"}),
+        props.Translatable(translations={"en": "Books", "nl": "Boeken"}),
+        props.Translatable(translations={"en": "Food Items", "nl": "Voedingsproducten"})
+    ]
+
+    open_ended_question = d3i_props.PropsUIQuestionOpen(
+        id=1,
+        question=open_question
+    )
+
+    multiple_choice_question = d3i_props.PropsUIQuestionMultipleChoice(
+        id=2,
+        question=mc_question,
+        choices=mc_choices
+    )
+
+    checkbox_question_obj = d3i_props.PropsUIQuestionMultipleChoiceCheckbox(
+        id=3,
+        question=checkbox_question,
+        choices=checkbox_choices
+    )
+
+    return d3i_props.PropsUIPromptQuestionnaire(
+        description=questionnaire_description,
+        questions=[
+            multiple_choice_question,
+            checkbox_question_obj,
+            open_ended_question
+        ]
+    )

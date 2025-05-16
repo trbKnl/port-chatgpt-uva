@@ -147,3 +147,118 @@ class PropsUIPromptFileInputMultiple:
         dict["description"] = self.description.toDict()
         dict["extensions"] = self.extensions
         return dict
+
+
+@dataclass
+class PropsUIQuestionOpen:
+    """
+    Open-ended question.
+
+    Attributes:
+        id (int): Question ID.
+        question (Translatable): The question text.
+    """
+    id: int
+    question: props.Translatable
+
+    def toDict(self):
+        """
+        Convert the object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the object.
+        """
+        dict = {}
+        dict["__type__"] = "PropsUIQuestionOpen"
+        dict["id"] = self.id
+        dict["question"] = self.question.toDict()
+        return dict
+
+
+@dataclass
+class PropsUIQuestionMultipleChoiceCheckbox:
+    """
+    Multiple choice question with checkboxes.
+
+    Attributes:
+        id (int): Question ID.
+        question (Translatable): The question text.
+        choices (list[Translatable]): List of choices.
+    """
+    id: int
+    question: props.Translatable
+    choices: list[props.Translatable]
+
+    def toDict(self):
+        """
+        Convert the object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the object.
+        """
+        dict = {}
+        dict["__type__"] = "PropsUIQuestionMultipleChoiceCheckbox"
+        dict["id"] = self.id
+        dict["question"] = self.question.toDict()
+        dict["choices"] = [c.toDict() for c in self.choices]
+        return dict
+
+
+@dataclass
+class PropsUIQuestionMultipleChoice:
+    """
+    Multiple choice question with radio buttons.
+
+    Attributes:
+        id (int): Question ID.
+        question (Translatable): The question text.
+        choices (list[Translatable]): List of choices.
+    """
+    id: int
+    question: props.Translatable
+    choices: list[props.Translatable]
+
+    def toDict(self):
+        """
+        Convert the object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the object.
+        """
+        dict = {}
+        dict["__type__"] = "PropsUIQuestionMultipleChoice"
+        dict["id"] = self.id
+        dict["question"] = self.question.toDict()
+        dict["choices"] = [c.toDict() for c in self.choices]
+        return dict
+
+
+@dataclass
+class PropsUIPromptQuestionnaire:
+    """
+    Questionnaire containing multiple questions.
+
+    Attributes:
+        description (Translatable): Description of the questionnaire.
+        questions (list[PropsUIQuestionMultipleChoice | PropsUIQuestionMultipleChoiceCheckbox | PropsUIQuestionOpen]):
+            List of questions in the questionnaire.
+    """
+    description: props.Translatable
+    questions: list[
+        PropsUIQuestionMultipleChoice | 
+        PropsUIQuestionMultipleChoiceCheckbox | 
+        PropsUIQuestionOpen
+    ]
+
+    def toDict(self):
+        """
+        Convert the object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the object.
+        """
+        dict = {}
+        dict["__type__"] = "PropsUIPromptQuestionnaire"
+        dict["description"] = self.description.toDict()
+        dict["questions"] = [q.toDict() for q in self.questions]
+        return dict
