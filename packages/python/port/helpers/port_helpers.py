@@ -15,6 +15,7 @@ def render_page(
         | props.PropsUIPromptConsentForm 
         | d3i_props.PropsUIPromptConsentFormViz
         | props.PropsUIPromptFileInput 
+        | d3i_props.PropsUIPromptFileInputMultiple
         | props.PropsUIPromptConfirm 
     )
 ) -> CommandUIRender:
@@ -74,26 +75,36 @@ def generate_retry_prompt(platform_name: str) -> props.PropsUIPromptConfirm:
     return props.PropsUIPromptConfirm(text, ok, cancel)
 
 
-def generate_file_prompt(extensions: str) -> props.PropsUIPromptFileInput:
+def generate_file_prompt(extensions: str, multiple: bool = False) -> props.PropsUIPromptFileInput | d3i_props.PropsUIPromptFileInputMultiple:
     """
-    Generates a file input prompt for selecting a file for a platform.
-
+    Generates a file input prompt for selecting file(s) for a platform.
     This function creates a bilingual (English and Dutch) file input prompt
-    that instructs the user to select a file they've received from a platform
+    that instructs the user to select file(s) they've received from a platform
     and stored on their device.
 
-    Args:
-        extensions (str): A collection of allowed MIME types. 
-        For example: "application/zip, text/plain, application/json"
+    The prompt that is returned by this function needs to be rendered using: yield result = render_page(...)
+    result.value should then contain the file handle(s). 
+    In case multiple is true, a list with file handles is returned.
 
+    Args:
+        extensions (str): A collection of allowed MIME types.
+            For example: "application/zip, text/plain, application/json"
+        multiple (bool, optional): Whether to allow multiple file selection.
+            Defaults to False.
+            
     Returns:
-        props.PropsUIPromptFileInput: A file input prompt object containing
-        the description text and allowed file extensions.
+        props.PropsUIPromptFileInput | d3i_props.PropsUIPromptFileInputMultiple: 
+            A file input prompt object containing the description text and 
+            allowed file extensions. If multiple=True, returns a 
+            PropsUIPromptFileInputMultiple object for selecting multiple files.
     """
     description = props.Translatable({
         "en": "Please follow the download instructions and choose the file that you stored on your device.",
         "nl": "Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat.",
     })
+    if multiple:
+        return d3i_props.PropsUIPromptFileInputMultiple(description, extensions)
+
     return props.PropsUIPromptFileInput(description, extensions)
 
 

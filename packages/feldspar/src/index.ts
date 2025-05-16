@@ -15,6 +15,7 @@ export {
   Title1, 
   Title4, 
   BodyLarge,
+  BodySmall,
 } from './framework/visualization/react/ui/elements/text'
 export { 
   LabelButton,

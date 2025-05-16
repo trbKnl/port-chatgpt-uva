@@ -1,18 +1,18 @@
 import { DataSubmissionPageFactory, ScriptHostComponent } from "@eyra/feldspar";
-import { HelloWorldFactory } from "./components/hello_world";
 import { ConsentFormVizFactory } from "./factories/consent_form_viz";
+import { FileInputMultipleFactory } from "./components/file_input_multiple/factory"
 
 function App() {
   return (
     <div className="App">
       <ScriptHostComponent
-        workerUrl="./py_worker.js"
+        workerUrl="./d3i_py_worker.js"
         standalone={process.env.NODE_ENV !== "production"}
         factories={[
           new DataSubmissionPageFactory({
             promptFactories: [
-                new HelloWorldFactory(),
                 new ConsentFormVizFactory(),
+                new FileInputMultipleFactory(),
             ],
           }),
         ]}

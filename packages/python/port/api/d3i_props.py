@@ -121,3 +121,29 @@ class PropsUIPromptConsentFormViz:
         dict["donateQuestion"] = self.donate_question and self.donate_question.toDict()
         dict["donateButton"] = self.donate_button and self.donate_button.toDict()
         return dict
+
+
+@dataclass
+class PropsUIPromptFileInputMultiple:
+    """
+    Prompt the user to submit multiple files.
+
+    Attributes:
+        description (Translatable): Text with an explanation.
+        extensions (str): Accepted mime types, example: "application/zip, text/plain".
+    """
+    description: props.Translatable
+    extensions: str
+
+    def toDict(self):
+        """
+        Convert the object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the object.
+        """
+        dict = {}
+        dict["__type__"] = "PropsUIPromptFileInputMultiple"
+        dict["description"] = self.description.toDict()
+        dict["extensions"] = self.extensions
+        return dict
