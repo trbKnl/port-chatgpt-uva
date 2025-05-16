@@ -92,6 +92,6 @@ export default class WorkerProcessingEngine  {
         (response) => this.nextRunCycle(response),
         () => {}
       )
-    }
+    } 
   }
 }
