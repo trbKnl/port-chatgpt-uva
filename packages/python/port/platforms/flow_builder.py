@@ -41,10 +41,10 @@ class FlowBuilder:
                 "en": "Try again", 
                 "nl": "Probeer opnieuw"
             }),
-            
+
             "review_data_description": props.Translatable({
                 "en": f"Below you will find a curated selection of {self.platform_name} data.",
-                "nl": f"Below you will find a curated selection of {self.platform_name} data.",
+                "nl": f"Hieronder vindt u een zorgvuldig samengestelde selectie van {self.platform_name} gegevens.",
             })
         }
         
