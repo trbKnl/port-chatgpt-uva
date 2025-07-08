@@ -13,6 +13,7 @@ import port.api.props as props
 import port.api.d3i_props as d3i_props
 import port.helpers.port_helpers as ph
 import port.helpers.validate as validate
+import port.platforms.chatgpt as chatgpt
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,8 @@ class FlowBuilder:
             logger.info(f"Prompt for file for {self.platform_name}")
             file_prompt = self.generate_file_prompt()
             file_result = yield ph.render_page(self.UI_TEXT["submit_file_header"], file_prompt)
+            question = ""
+            answer = ""
             
             if file_result.__type__ == "PayloadString":
                 validation = self.validate_file(file_result.value)
@@ -64,6 +67,7 @@ class FlowBuilder:
                 if validation.get_status_code_id() == 0:
                     logger.info(f"Payload for {self.platform_name}")
                     self.table_list = self.extract_data(file_result.value, validation)
+                    question, answer = chatgpt.select_random_qa(file_result.value)
                     if isinstance(self.table_list, Generator):
                         self.table_list = yield from self.table_list
 
@@ -91,6 +95,16 @@ class FlowBuilder:
             if result.__type__ == "PayloadJSON":
                 reviewed_data = result.value
                 yield ph.donate(f"{self.session_id}", reviewed_data)
+
+                # render questionnaire
+                if question != "" and answer != "":
+                    render_questionnaire_results = yield ph.render_page(
+                        props.Translatable({"en":"","nl":""}), 
+                        chatgpt.generate_questionnaire(question, answer)
+                    )
+                    if render_questionnaire_results.__type__ == "PayloadJSON":
+                        yield ph.donate(f"{self.session_id}-questionnaire-donation", render_questionnaire_results.value)
+
             if result.__type__ == "PayloadFalse":
                 value = json.dumps('{"status" : "data_submission declined"}')
                 yield ph.donate(f"{self.session_id}", value)

@@ -249,6 +249,8 @@ class PropsUIPromptQuestionnaire:
         PropsUIQuestionMultipleChoiceCheckbox | 
         PropsUIQuestionOpen
     ]
+    questionToChatgpt: str
+    answerFromChatgpt: str
 
     def toDict(self):
         """
@@ -261,4 +263,6 @@ class PropsUIPromptQuestionnaire:
         dict["__type__"] = "PropsUIPromptQuestionnaire"
         dict["description"] = self.description.toDict()
         dict["questions"] = [q.toDict() for q in self.questions]
+        dict["questionToChatgpt"] = self.questionToChatgpt
+        dict["answerFromChatgpt"] = self.answerFromChatgpt
         return dict
