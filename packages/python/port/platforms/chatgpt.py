@@ -154,7 +154,6 @@ def select_random_qa(chatgpt_zip: str)  -> Tuple[str, str]:
                         datapoints.append(datapoint)
 
         df = pd.DataFrame(datapoints)
-        print(df)
 
         # conversation selection criterion
         no_parents = ~df["id"].isin(df["child"]) # Indicates the start of a convo: i.e. an message is no ones child
